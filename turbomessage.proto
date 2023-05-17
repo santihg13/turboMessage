@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package turbomessage;
+
+service TurboMessage {
+  rpc registerUser(User) returns (Status) {}; //para dar de alta a un usuario
+  rpc checkUser(User) returns (Status) {}; //para verificar a un usuario
+  rpc sendEmail(Email) returns (Status) {}; //para enviar un correo
+  rpc readIncomingEmails(User) returns (stream Email) {}; //para leer correos entrantes
+  rpc readOutgoingEmails(User) returns (stream Email) {}; //para leer correos salientes
+  rpc deleteIncomingEmail(Email) returns (Status) {}; //para borrar correos entrantes
+  rpc deleteOutgoingEmail(Email) returns (Status) {}; //para borrar correos salientes
+  rpc markEmailAsRead(Email) returns (Status) {}; //para indicar que un correo ya fue leído
+  rpc fetchInbox(FetchInboxRequest) returns (FetchInboxResponse) {};//para el inbox 
+  rpc fetchSentMail(SentMailRequest) returns (SentMailResponse) {}; // para jalar los correos enviados
+  rpc deleteEmail(DeleteEmailRequest) returns (DeleteEmailResponse) {}; //para borrar correos
+  rpc readEmail(ReadEmailRequest) returns (ReadEmailResponse) {}; //para leer correos
+}
+//definimos los dos estados posibles (éxito y fracaso)
+message Status {
+  bool success = 1;
+  string reason = 2;
+}
+
+//definimos a un usuario, el cual está identificado por username y contraseña 
+message User {
+  string username = 1;
+  string password = 2;
+}
+
+//definimos las características del correo 
+message Email {
+  int32 id = 1;
+  string subject = 2;
+  string sender = 3;
+  string recipient = 4;
+  string message = 5;
+  bool read = 6;
+}
+//para manejar el fetch del inbox
+message FetchInboxRequest {
+  string username = 1;
+}
+
+message FetchInboxResponse {
+  bool success = 1;
+  string reason = 2;
+  repeated Email emails = 3;
+}
+
+//Para ver los correos enviados
+message SentMailRequest {
+  string username = 1;
+}
+
+message SentMailResponse {
+  bool success = 1;
+  string reason = 2;
+  repeated Email emails = 3;
+}
+
+//Para borrar correo
+message DeleteEmailRequest {
+  int32 email_id = 1;
+}
+
+message DeleteEmailResponse {
+  bool success = 1;
+  string reason = 2;
+}
+
+//Para leer correos
+message ReadEmailRequest {
+  int32 id = 1;
+  string recipient = 2;
+}
+
+message ReadEmailResponse {
+  bool success = 1;
+  string reason = 2;
+  Email email = 3;
+}
